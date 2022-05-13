@@ -314,8 +314,8 @@ Resources:
       EventSourceArn: !GetAtt  TableCD117FA1.StreamArn
       FilterCriteria:
         Filters:
-          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] } } } }'
-          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [true] } }, "OldImage": { "compliant": { "BOOL": [false] } } } }'
+          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] },"compliant":{"BOOL":[false]}, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] } } } }'
           - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [false] } }, "OldImage": { "compliant": { "BOOL": [true] } } } }'
+          - Pattern: '{ “eventName”: [“MODIFY”], “dynamodb”: { “NewImage”: { “entity”: { “S”: [“score”] }, “cod_chav_patc”: { “S”: [{“prefix”: “score#“}]}, "cod_chav_filg":{"S": [ { "anything-but": { "prefix": "ALE#" } } ]},“cod_chav_filg_locl”: { “S”: [{“prefix”: “LATEST#ALL#“}] } } }, "OldImage": {"score":  [ { "numeric": [ ">", 0, "<=", 100 ] } ]} }'
       MaximumRetryAttempts: 2
       StartingPosition: TRIM_HORIZON
