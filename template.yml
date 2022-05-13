@@ -1,0 +1,321 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::Serverless-2016-10-31'
+
+Parameters:
+  TestParameter:
+    Type: String
+    Default: test
+  vpcid:
+    Type: String
+    Default: test
+  kmsKeyArn:
+    Type: String
+    Default: "arn:aws:kms:us-east-1:554995069609:key/8138eab3-a63c-4de6-bcce-b91376dc84f6"
+    # we can use alias to get the key id,
+  kmsKeyId:
+    Type: String
+    Default: "arn:aws:kms:us-east-1:554995069609:alias/cof/app/sqs"
+
+# custom resources uses only one resource creation this will be called and this will be triggered and other one lambda,
+# we can use only one lambda that will be triggered. will use cfn resources
+Resources:
+## this is main table where streams are enabled
+  TableCD117FA1:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      KeySchema:
+        - AttributeName: cod_chav_patc
+          KeyType: HASH
+        - AttributeName: cod_chav_filg
+          KeyType: RANGE
+      AttributeDefinitions:
+        - AttributeName: cod_chav_patc
+          AttributeType: S
+        - AttributeName: cod_chav_filg
+          AttributeType: S
+        - AttributeName: cod_chav_filg_locl
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      LocalSecondaryIndexes:
+        - IndexName: xff20022
+          KeySchema:
+            - AttributeName: cod_chav_patc
+              KeyType: HASH
+            - AttributeName: cod_chav_filg_locl
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: tbff2002_prod_autm_rvis_test
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+
+## this is kms policy for for kms
+  SqsKey5FE07FCA:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Statement:
+          - Action: kms:*
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":iam::"
+                    - Ref: AWS::AccountId
+                    - :root
+            Resource: "*"
+        Version: "2012-10-17"
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+
+# Resource for notification table
+  dynamodbtable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "cod_chav_patc"
+          AttributeType: "S"
+        - AttributeName: "cod_ordenar_chav"
+          AttributeType: "S"
+        - AttributeName: "status_ordenar"
+          AttributeType: "S"
+        - AttributeName: "tipo_ordenar"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "cod_chav_patc"
+          KeyType: "HASH"
+        - AttributeName: "cod_ordenar_chav"
+          KeyType: "RANGE"
+      BillingMode: "PAY_PER_REQUEST"
+      TableName: "tbff2022_notification_centro_test"
+      SSESpecification:
+        SSEEnabled: true
+      LocalSecondaryIndexes:
+        - IndexName: "xxnc_2022"
+          KeySchema:
+            - AttributeName: "cod_chav_patc"
+              KeyType: "HASH"
+            - AttributeName: "status_ordenar"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "xxnc_2022_v1"
+          KeySchema:
+            - AttributeName: "cod_chav_patc"
+              KeyType: "HASH"
+            - AttributeName: "tipo_ordenar"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+      Tags:
+        - Key: "app"
+          Value: "notificationcenter"
+
+  # CustomResources:
+  #   Type: Custom::LambdaTrigger
+  #   Properties:
+  #     ServiceToken: !GetAtt lambdaFunction.Arn
+  #     test: !Ref TestParameter
+  #     FunctionName: !Ref lambdaFunction
+  #     Message: "test_enabled:true"
+  #     CurrentDate: "6789"
+  #     SomeRandomValue: "random"
+
+
+  # CustomHandler:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Handler: custom_function.handler
+  #     Runtime: python3.7
+  #     Tracing: Active
+  #     Environment:
+  #       Variables:
+  #         test_enabled: !Ref TestParameter
+
+
+  sqsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: iuconfia_productqueue_v1
+
+      # MaximumMessageSize:
+      # MessageRetentionPeriod: 24
+      # ReceiveMessageWaitTimeSeconds: 1
+      KmsMasterKeyId: !Ref kmsKeyId
+      VisibilityTimeout: 300
+      Tags:
+        - Key: test
+          Value: iuconfia
+
+  sqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref sqsQueue
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - "sqs:SendMessage"
+              - "sqs:ReceiveMessage"
+            Effect: "Allow"
+            Resource: !GetAtt sqsQueue.Arn
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+          # - Action:
+          #     - "SQS:*"
+          #   Effect: "Deny"
+          #   Resource: !Ref sqsQueue
+          #   Condition:
+          #     StringNotEquals:
+          #       aws:SourceVpc: !Ref vpcid
+
+
+  lambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: iuconfialambdaFunctionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+      - PolicyName: kmskey
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - kms:Decrypt
+            - kms:Encrypt
+            - kms:GenerateDataKey
+            - kms:ListAliases
+            - kms:CreateGrant
+            - kms:RetireGrant
+            Resource: "arn:aws:kms:us-east-1:554995069609:*"
+      - PolicyName: dynamodbstreamslist
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: dynamodb:ListStreams
+              Resource: "*"
+      - PolicyName: dynamodbstreamsrecords
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:DescribeStream
+                - dynamodb:GetRecords
+                - dynamodb:GetShardIterator
+              Resource:
+                Fn::GetAtt:
+                  - TableCD117FA1
+                  - StreamArn
+      - PolicyName: dynamodb
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:BatchGet*
+                - dynamodb:DescribeStream
+                - dynamodb:DescribeTable
+                - dynamodb:Get*
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:BatchWrite*
+                - dynamodb:CreateTable
+                - dynamodb:Delete*
+                - dynamodb:Update*
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_test
+      - PolicyName: dynamodbnc
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:BatchGet*
+                - dynamodb:DescribeStream
+                - dynamodb:DescribeTable
+                - dynamodb:Get*
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:BatchWrite*
+                - dynamodb:CreateTable
+                - dynamodb:Delete*
+                - dynamodb:Update*
+                - dynamodb:PutItem
+              Resource: arn:aws:dynamodb:*:*:table/tbff2022_notification_centro_test
+      - PolicyName: queue
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - "SQS:SendMessage"
+            - "SQS:ReceiveMessage"
+            Resource: !GetAtt  sqsQueue.Arn
+
+  lambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: This is lambda function this gets triggered and sends the messages to sqs sfsd
+      FunctionName: IUConfiaLambdaFunctionCaptureNotificationEvents
+      Handler: lambda_function.handler
+      KmsKeyArn: arn:aws:kms:us-east-1:554995069609:key/8138eab3-a63c-4de6-bcce-b91376dc84f6
+      MemorySize: 128
+      # # # # this is most vital it does not take logical id it takes arn to be provided.
+      Role: !GetAtt  lambdaFunctionRole.Arn
+      Runtime: python3.8
+      Timeout: 300
+      # VpcConfig:
+      #   SecurityGroupIds:
+      #     - sg-id
+      #   SubnetIds:
+      #     - subnet-id
+      Environment:
+        Variables:
+          dynamodbTable: value1 # A map of key-value pairs that the Lambda function can access
+          sqsqueuename: !Ref sqsQueue
+      CodeUri: .
+
+  Lambda1DynamoDBEventSourceDynamodbStreams:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      FunctionName: !Ref lambdaFunction
+      BatchSize: 1
+      DestinationConfig:
+        OnFailure:
+          Destination:
+            !GetAtt lambdaFunction.Arn
+      EventSourceArn: !GetAtt  TableCD117FA1.StreamArn
+      FilterCriteria:
+        Filters:
+          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] } } } }'
+          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [true] } }, "OldImage": { "compliant": { "BOOL": [false] } } } }'
+          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [false] } }, "OldImage": { "compliant": { "BOOL": [true] } } } }'
+      MaximumRetryAttempts: 2
+      StartingPosition: TRIM_HORIZON
