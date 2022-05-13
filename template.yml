@@ -48,30 +48,30 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: tbff2002_prod_autm_rvis_test
-    UpdateReplacePolicy: Retain
-    DeletionPolicy: Retain
+    # UpdateReplacePolicy: Retain
+    # DeletionPolicy: Retain
 
 ## this is kms policy for for kms
-  SqsKey5FE07FCA:
-    Type: AWS::KMS::Key
-    Properties:
-      KeyPolicy:
-        Statement:
-          - Action: kms:*
-            Effect: Allow
-            Principal:
-              AWS:
-                Fn::Join:
-                  - ""
-                  - - "arn:"
-                    - Ref: AWS::Partition
-                    - ":iam::"
-                    - Ref: AWS::AccountId
-                    - :root
-            Resource: "*"
-        Version: "2012-10-17"
-    UpdateReplacePolicy: Retain
-    DeletionPolicy: Retain
+  # SqsKey5FE07FCA:
+  #   Type: AWS::KMS::Key
+  #   Properties:
+  #     KeyPolicy:
+  #       Statement:
+  #         - Action: kms:*
+  #           Effect: Allow
+  #           Principal:
+  #             AWS:
+  #               Fn::Join:
+  #                 - ""
+  #                 - - "arn:"
+  #                   - Ref: AWS::Partition
+  #                   - ":iam::"
+  #                   - Ref: AWS::AccountId
+  #                   - :root
+  #           Resource: "*"
+  #       Version: "2012-10-17"
+  #   UpdateReplacePolicy: Retain
+  #   DeletionPolicy: Retain
 
 # Resource for notification table
   dynamodbtable:
@@ -204,21 +204,12 @@ Resources:
           Version: 2012-10-17
           Statement:
             - Effect: Allow
-              Action: dynamodb:ListStreams
-              Resource: "*"
-      - PolicyName: dynamodbstreamsrecords
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
               Action:
+                - dynamodb:ListStreams
                 - dynamodb:DescribeStream
                 - dynamodb:GetRecords
                 - dynamodb:GetShardIterator
-              Resource:
-                Fn::GetAtt:
-                  - TableCD117FA1
-                  - StreamArn
+              Resource: "*"
       - PolicyName: dynamodb
         PolicyDocument:
           Version: 2012-10-17
@@ -291,17 +282,24 @@ Resources:
   Lambda1DynamoDBEventSourceDynamodbStreams:
     Type: AWS::Lambda::EventSourceMapping
     Properties:
-      FunctionName: !Ref lambdaFunction
       BatchSize: 1
-      DestinationConfig:
-        OnFailure:
-          Destination:
-            !GetAtt lambdaFunction.Arn
-      EventSourceArn: !GetAtt  TableCD117FA1.StreamArn
+      Enabled: True
+      EventSourceArn: !GetAtt TableCD117FA1.StreamArn
+      FunctionName: !GetAtt lambdaFunction.Arn
+      # Always start at the tail of the Stream
+      StartingPosition: TRIM_HORIZON
       FilterCriteria:
         Filters:
-          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] },"compliant":{"BOOL":[false]}, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] } } } }'
-          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [false] } }, "OldImage": { "compliant": { "BOOL": [true] } } } }'
-          - Pattern: '{ “eventName”: [“MODIFY”], “dynamodb”: { “NewImage”: { “entity”: { “S”: [“score”] }, “cod_chav_patc”: { “S”: [{“prefix”: “score#“}]}, "cod_chav_filg":{"S": [ { "anything-but": { "prefix": "ALE#" } } ]},“cod_chav_filg_locl”: { “S”: [{“prefix”: “LATEST#ALL#“}] } } }, "OldImage": {"score":  [ { "numeric": [ ">", 0, "<=", 100 ] } ]} }'
-      MaximumRetryAttempts: 2
-      StartingPosition: TRIM_HORIZON
+          - Pattern: '{"eventName":["INSERT"],"dynamodb":{"NewImage":{"entity":{"S":["Product"]}},"complaint":{"BOOL":[false]}, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] }}}'
+
+
+      # FunctionName: !GetAtt lambdaFunction.Arn
+      # BatchSize: 1
+      # Enabled: True
+      # EventSourceArn: !GetAtt  TableCD117FA1.StreamArn
+      # FilterCriteria:
+      #   Filters:
+      #     - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] },"compliant":{"BOOL":[false]}, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] } } } }'
+      #     - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] }, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] },  "compliant": { "BOOL": [false] } }, "OldImage": { "compliant": { "BOOL": [true] } } } }'
+      #     - Pattern: '{ “eventName”: [“MODIFY”], “dynamodb”: { “NewImage”: { “entity”: { “S”: [“score”] }, “cod_chav_patc”: { “S”: [{“prefix”: “score#“}]}, "cod_chav_filg":{"S": [ { "anything-but": { "prefix": "ALE#" } } ]},“cod_chav_filg_locl”: { “S”: [{“prefix”: “LATEST#ALL#“}] } } }, "OldImage": {"score":  [ { "numeric": [ ">", 0, "<=", 100 ] } ]} }'
+      # StartingPosition: LATEST
