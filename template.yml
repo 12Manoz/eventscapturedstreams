@@ -47,7 +47,7 @@ Resources:
             ProjectionType: ALL
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: tbff2002_prod_autm_rvis_stream_test
+      TableName: tbff2002_prod_autm_rvis_test
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
 
@@ -166,7 +166,7 @@ Resources:
   lambdaFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: iuconfialambdaFunctionRole
+      RoleName: iuconfialambdaRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -236,7 +236,7 @@ Resources:
                 - dynamodb:Delete*
                 - dynamodb:Update*
                 - dynamodb:PutItem
-              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_stream_test
+              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_test
       - PolicyName: dynamodbnc
         PolicyDocument:
           Version: 2012-10-17
