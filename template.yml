@@ -47,7 +47,7 @@ Resources:
             ProjectionType: ALL
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: tbff2002_prod_autm_rvis_test
+      TableName: tbff2002_prod_autm_rvis_stream_test
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
 
@@ -138,36 +138,22 @@ Resources:
   #         test_enabled: !Ref TestParameter
 
 
-  sqsQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: iuconfia_productqueue_v1
-
-      # MaximumMessageSize:
-      # MessageRetentionPeriod: 24
-      # ReceiveMessageWaitTimeSeconds: 1
-      KmsMasterKeyId: !Ref kmsKeyId
-      VisibilityTimeout: 300
-      Tags:
-        - Key: test
-          Value: iuconfia
-
-  sqsQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      Queues:
-        - !Ref sqsQueue
-      PolicyDocument:
-        Statement:
-          -
-            Action:
-              - "sqs:SendMessage"
-              - "sqs:ReceiveMessage"
-            Effect: "Allow"
-            Resource: !GetAtt sqsQueue.Arn
-            Principal:
-              Service:
-                - lambda.amazonaws.com
+  # sqsQueuePolicy:
+  #   Type: AWS::SQS::QueuePolicy
+  #   Properties:
+  #     Queues:
+  #       - !Ref sqsQueue
+  #     PolicyDocument:
+  #       Statement:
+  #         -
+  #           Action:
+  #             - "sqs:SendMessage"
+  #             - "sqs:ReceiveMessage"
+  #           Effect: "Allow"
+  #           Resource: !GetAtt sqsQueue.Arn
+  #           Principal:
+  #             Service:
+  #               - lambda.amazonaws.com
           # - Action:
           #     - "SQS:*"
           #   Effect: "Deny"
@@ -250,7 +236,7 @@ Resources:
                 - dynamodb:Delete*
                 - dynamodb:Update*
                 - dynamodb:PutItem
-              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_test
+              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_stream_test
       - PolicyName: dynamodbnc
         PolicyDocument:
           Version: 2012-10-17
@@ -269,15 +255,15 @@ Resources:
                 - dynamodb:Update*
                 - dynamodb:PutItem
               Resource: arn:aws:dynamodb:*:*:table/tbff2022_notification_centro_test
-      - PolicyName: queue
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - "SQS:SendMessage"
-            - "SQS:ReceiveMessage"
-            Resource: !GetAtt  sqsQueue.Arn
+      # - PolicyName: queue
+      #   PolicyDocument:
+      #     Version: '2012-10-17'
+      #     Statement:
+      #     - Effect: Allow
+      #       Action:
+      #       - "SQS:SendMessage"
+      #       - "SQS:ReceiveMessage"
+      #       Resource: !GetAtt  sqsQueue.Arn
 
   lambdaFunction:
     Type: AWS::Serverless::Function
@@ -299,7 +285,7 @@ Resources:
       Environment:
         Variables:
           dynamodbTable: value1 # A map of key-value pairs that the Lambda function can access
-          sqsqueuename: !Ref sqsQueue
+          # sqsqueuename: !Ref sqsQueue
       CodeUri: .
 
   Lambda1DynamoDBEventSourceDynamodbStreams:
