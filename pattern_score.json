@@ -1,0 +1,26 @@
+{
+  "eventName": ["MODIFY"],
+  "dynamodb": {
+    "NewImage": {
+      "entity": { "S": ["score"] },
+      "cod_chav_patc": { "S": [{ "prefix": "score#" }] },
+      "cod_chav_filg": {
+        "S": [
+          {
+            "anything-but": {
+              "prefix": "ALE#"
+            }
+          }
+        ]
+      },
+      "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] }
+    }
+  },
+  "OldImage": {
+    "score": [
+      {
+        "numeric": [">", 0, "<=", 100]
+      }
+    ]
+  }
+}
