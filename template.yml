@@ -15,39 +15,47 @@ Parameters:
   kmsKeyId:
     Type: String
     Default: "arn:aws:kms:us-east-1:554995069609:alias/cof/app/sqs"
-
+  dynamodbstreamarn:
+    Type: String
+    Default: "arn:aws:dynamodb:us-east-1:554995069609:table/tbff2002_prod_autm_rvis/stream/2022-04-19T16:31:42.091"
+  notificationtable:
+    Type: String
+    Default: "tbff2022_notification_centro"
+  iuconfiatable:
+    Type: String
+    Default: "tbff2002_prod_autm_rvis"
 # custom resources uses only one resource creation this will be called and this will be triggered and other one lambda,
 # we can use only one lambda that will be triggered. will use cfn resources
 Resources:
 ## this is main table where streams are enabled
-  TableCD117FA1:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      KeySchema:
-        - AttributeName: cod_chav_patc
-          KeyType: HASH
-        - AttributeName: cod_chav_filg
-          KeyType: RANGE
-      AttributeDefinitions:
-        - AttributeName: cod_chav_patc
-          AttributeType: S
-        - AttributeName: cod_chav_filg
-          AttributeType: S
-        - AttributeName: cod_chav_filg_locl
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
-      LocalSecondaryIndexes:
-        - IndexName: xff20022
-          KeySchema:
-            - AttributeName: cod_chav_patc
-              KeyType: HASH
-            - AttributeName: cod_chav_filg_locl
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
-      StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: tbff2002_prod_autm_rvis_test
+  # TableCD117FA1:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     KeySchema:
+  #       - AttributeName: cod_chav_patc
+  #         KeyType: HASH
+  #       - AttributeName: cod_chav_filg
+  #         KeyType: RANGE
+  #     AttributeDefinitions:
+  #       - AttributeName: cod_chav_patc
+  #         AttributeType: S
+  #       - AttributeName: cod_chav_filg
+  #         AttributeType: S
+  #       - AttributeName: cod_chav_filg_locl
+  #         AttributeType: S
+  #     BillingMode: PAY_PER_REQUEST
+  #     LocalSecondaryIndexes:
+  #       - IndexName: xff20022
+  #         KeySchema:
+  #           - AttributeName: cod_chav_patc
+  #             KeyType: HASH
+  #           - AttributeName: cod_chav_filg_locl
+  #             KeyType: RANGE
+  #         Projection:
+  #           ProjectionType: ALL
+  #     StreamSpecification:
+  #       StreamViewType: NEW_AND_OLD_IMAGES
+  #     TableName: tbff2002_prod_autm_rvis_test
     # UpdateReplacePolicy: Retain
     # DeletionPolicy: Retain
 
@@ -74,47 +82,47 @@ Resources:
   #   DeletionPolicy: Retain
 
 # Resource for notification table
-  dynamodbtable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "cod_chav_patc"
-          AttributeType: "S"
-        - AttributeName: "cod_ordenar_chav"
-          AttributeType: "S"
-        - AttributeName: "status_ordenar"
-          AttributeType: "S"
-        - AttributeName: "tipo_ordenar"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "cod_chav_patc"
-          KeyType: "HASH"
-        - AttributeName: "cod_ordenar_chav"
-          KeyType: "RANGE"
-      BillingMode: "PAY_PER_REQUEST"
-      TableName: "tbff2022_notification_centro"
-      SSESpecification:
-        SSEEnabled: true
-      LocalSecondaryIndexes:
-        - IndexName: "xxnc_2022"
-          KeySchema:
-            - AttributeName: "cod_chav_patc"
-              KeyType: "HASH"
-            - AttributeName: "status_ordenar"
-              KeyType: "RANGE"
-          Projection:
-            ProjectionType: "ALL"
-        - IndexName: "xxnc_2022_v1"
-          KeySchema:
-            - AttributeName: "cod_chav_patc"
-              KeyType: "HASH"
-            - AttributeName: "tipo_ordenar"
-              KeyType: "RANGE"
-          Projection:
-            ProjectionType: "ALL"
-      Tags:
-        - Key: "app"
-          Value: "notificationcenter"
+  # dynamodbtable:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     AttributeDefinitions:
+  #       - AttributeName: "cod_chav_patc"
+  #         AttributeType: "S"
+  #       - AttributeName: "cod_ordenar_chav"
+  #         AttributeType: "S"
+  #       - AttributeName: "status_ordenar"
+  #         AttributeType: "S"
+  #       - AttributeName: "tipo_ordenar"
+  #         AttributeType: "S"
+  #     KeySchema:
+  #       - AttributeName: "cod_chav_patc"
+  #         KeyType: "HASH"
+  #       - AttributeName: "cod_ordenar_chav"
+  #         KeyType: "RANGE"
+  #     BillingMode: "PAY_PER_REQUEST"
+  #     TableName: "tbff2022_notification_centro"
+  #     SSESpecification:
+  #       SSEEnabled: true
+  #     LocalSecondaryIndexes:
+  #       - IndexName: "xxnc_2022"
+  #         KeySchema:
+  #           - AttributeName: "cod_chav_patc"
+  #             KeyType: "HASH"
+  #           - AttributeName: "status_ordenar"
+  #             KeyType: "RANGE"
+  #         Projection:
+  #           ProjectionType: "ALL"
+  #       - IndexName: "xxnc_2022_v1"
+  #         KeySchema:
+  #           - AttributeName: "cod_chav_patc"
+  #             KeyType: "HASH"
+  #           - AttributeName: "tipo_ordenar"
+  #             KeyType: "RANGE"
+  #         Projection:
+  #           ProjectionType: "ALL"
+  #     Tags:
+  #       - Key: "app"
+  #         Value: "notificationcenter"
 
   # CustomResources:
   #   Type: Custom::LambdaTrigger
@@ -198,7 +206,7 @@ Resources:
             - kms:ListAliases
             - kms:CreateGrant
             - kms:RetireGrant
-            Resource: "arn:aws:kms:us-east-1:554995069609:*"
+            Resource: "*"
       - PolicyName: dynamodbstreamslist
         PolicyDocument:
           Version: 2012-10-17
@@ -245,7 +253,7 @@ Resources:
                 - dynamodb:Delete*
                 - dynamodb:Update*
                 - dynamodb:PutItem
-              Resource: arn:aws:dynamodb:*:*:table/tbff2022_notification_centro_test
+              Resource: arn:aws:dynamodb:*:*:table/tbff2022_notification_centro
       # - PolicyName: queue
       #   PolicyDocument:
       #     Version: '2012-10-17'
@@ -284,15 +292,15 @@ Resources:
     Properties:
       BatchSize: 1
       Enabled: True
-      EventSourceArn: !GetAtt TableCD117FA1.StreamArn
+      EventSourceArn: !Ref dynamodbstreamarn
       FunctionName: !GetAtt lambdaFunction.Arn
       # Always start at the tail of the Stream
       StartingPosition: TRIM_HORIZON
       FilterCriteria:
         Filters:
-          - Pattern: '{"eventName":["INSERT"],"dynamodb":{"NewImage":{"entity":{"S":["Product"]}},"complaint":{"BOOL":[false]}, "cod_chav_filg_locl": { "S": [{"prefix": "LATEST#"}] }}}'
-          - Pattern: '{"eventName": ["MODIFY"],"dynamodb": { "NewImage": {  "entity": { "S": ["Product"] } ,  "complaint": { "BOOL": [false] },"cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } }, "OldImage":{  "compliant":{ "BOOL": [true] } }}}'
-          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["score"] }, "cod_chav_patc": { "S": [{ "prefix": "score#" }] }, "score": [ { "numeric": [">", 0, "<=", 100] } ], "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] } }, "OldImage": { "score": [ { "numeric": [">", 0, "<=", 100] } ] }} }'
+          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [false] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } } } }'
+          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } ,  "complaint": { "BOOL": [false] },"cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } }, "OldImage":{  "compliant":{ "BOOL": [true] } }}}'
+          # - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["score"] }, "cod_chav_patc": { "S": [{ "prefix": "score#" }] }, "score": [ { "numeric": [">", 0, "<=", 100] } ], "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] } }, "OldImage": { "score": [ { "numeric": [">", 0, "<=", 100] } ] }} }'
 
 
       # FunctionName: !GetAtt lambdaFunction.Arn
