@@ -15,3 +15,6 @@ aws cloudformation package --template-file template.yml --s3-bucket deployment-d
 
 ## Delete Stack
 aws cloudformation delete-stack --stack-name dynamostreams
+
+## details
+stream=arn:aws:dynamodb:us-east-1:554995069609:table/tbff2002_prod_autm_rvis/stream/2022-04-19T16:31:42.091
