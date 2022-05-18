@@ -300,7 +300,7 @@ Resources:
         Filters:
           - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [False] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } } } }'
           - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [False] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } }, "OldImage":{  "compliant":{ "BOOL": [True] } }}}'
-          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["score"] }, "cod_chav_patc": { "S": [{ "prefix": "score#" }] }, "score": [ { "numeric": [">", 0, "<=", 100] } ], "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] } }, "OldImage": { "score": [ { "numeric": [">", 0, "<=", 100] } ] }} }'
+          - Pattern: '{ "eventName": [ "MODIFY" ], "dynamodb": { "NewImage": { "entity": { "S": [ "score" ] }, "cod_chav_patc": { "S": [ { "prefix": "score#" } ] }, "score": [ { "numeric": [ ">", 0, "<=", 100 ] } ], "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [ { "prefix": "LATEST#ALL#" } ] } }, "OldImage": { "score": [ { "numeric": [ ">", 0, "<=", 100 ] } ] } } }'
 
 
       # FunctionName: !GetAtt lambdaFunction.Arn
