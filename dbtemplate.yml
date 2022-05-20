@@ -1,7 +1,5 @@
-AWSTemplateFormatVersion: 2010-09-09
 
-# custom resources uses only one resource creation this will be called and this will be triggered and other one lambda,
-# we can use only one lambda that will be triggered. will use cfn resources
+AWSTemplateFormatVersion: "2010-09-09"
 Resources:
   dynamodbtable:
     Type: AWS::DynamoDB::Table
@@ -11,9 +9,11 @@ Resources:
           AttributeType: "S"
         - AttributeName: "cod_ordenar_chav"
           AttributeType: "S"
+        - AttributeName: "sigla_ordenar"
+          AttributeType: "S"
         - AttributeName: "status_ordenar"
           AttributeType: "S"
-        - AttributeName: "tipo_ordenar"
+        - AttributeName: "status_sigla_ordenar"
           AttributeType: "S"
       KeySchema:
         - AttributeName: "cod_chav_patc"
@@ -21,15 +21,14 @@ Resources:
         - AttributeName: "cod_ordenar_chav"
           KeyType: "RANGE"
       BillingMode: "PAY_PER_REQUEST"
-      TableName: "tbff2022_notification_centro"
-      SSESpecification:
-        SSEEnabled: true
+      TableName: "tbff2022_notification_centro_test"
+      SSEEnabled: True
       LocalSecondaryIndexes:
         - IndexName: "xxnc_2022"
           KeySchema:
             - AttributeName: "cod_chav_patc"
               KeyType: "HASH"
-            - AttributeName: "status_ordenar"
+            - AttributeName: "sigla_ordenar"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"
@@ -37,7 +36,15 @@ Resources:
           KeySchema:
             - AttributeName: "cod_chav_patc"
               KeyType: "HASH"
-            - AttributeName: "tipo_ordenar"
+            - AttributeName: "status_ordenar"
+              KeyType: "RANGE"
+          Projection:
+            ProjectionType: "ALL"
+        - IndexName: "xxnc_2022_v2"
+          KeySchema:
+            - AttributeName: "cod_chav_patc"
+              KeyType: "HASH"
+            - AttributeName: "status_sigla_ordenar"
               KeyType: "RANGE"
           Projection:
             ProjectionType: "ALL"

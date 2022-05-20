@@ -1,0 +1,34 @@
+{
+    "eventName": [
+        "MODIFY"
+    ],
+    "dynamodb": {
+        "NewImage": {
+            "entity": {
+                "S": [
+                    "Product"
+                ]
+            },
+            "compliant": {
+                "BOOL": [
+                    false
+                ]
+            },
+            "cod_chav_filg_locl": {
+                "S": [
+                    {
+                        "prefix": "LATEST#"
+                    }
+                ]
+            }
+        },
+        "OldImage": {
+
+            "compliant": {
+                "BOOL": [
+                    true
+                ]
+            }
+        }
+    }
+}
