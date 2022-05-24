@@ -1,37 +1,11 @@
 {
-  "eventName": [
-    "MODIFY"
-  ],
+  "eventName": ["MODIFY"],
   "dynamodb": {
     "NewImage": {
-      "entity": {
-        "S": [
-          "score"
-        ]
-      },
-      "cod_chav_patc": {
-        "S": [
-          {
-            "prefix": "score#"
-          }
-        ]
-      },
-      "cod_chav_filg": {
-        "S": [
-          {
-            "anything-but": {
-              "prefix": "ALE#"
-            }
-          }
-        ]
-      },
-      "cod_chav_filg_locl": {
-        "S": [
-          {
-            "prefix": "LATEST#ALL#"
-          }
-        ]
-      }
+      "entity": { "S": ["score"] },
+      "cod_chav_patc": { "S": [{ "prefix": "score#" }] },
+      "cod_chav_filg": { "S": [{ "anything-but": { "prefix": "ALE#" } }] },
+      "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] }
     }
   }
 }

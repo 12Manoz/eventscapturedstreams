@@ -298,9 +298,9 @@ Resources:
       StartingPosition: TRIM_HORIZON
       FilterCriteria:
         Filters:
-          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [False] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } } } }'
-          - Pattern: '{ "eventName": [ "MODIFY" ], "dynamodb": { "NewImage": { "entity": { "S": [ "Product" ] }, "compliant": { "BOOL": [ false ] }, "cod_chav_filg_locl": { "S": [ { "prefix": "LATEST#" } ] } }, "OldImage": { "compliant": { "BOOL": [ true ] } } } }'
-          - Pattern: '{ "eventName": [ "MODIFY" ], "dynamodb": { "NewImage": { "entity": { "S": [ "score" ] }, "cod_chav_patc": { "S": [ { "prefix": "score#" } ] }, "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [ { "prefix": "LATEST#ALL#" } ] } } } }'
+          - Pattern: '{ "eventName": ["INSERT"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [false] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } } } }'
+          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": ["Product"] } , "compliant": { "BOOL": [false] }, "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] } }, "OldImage":{  "compliant":{ "BOOL": [true] } }}}'
+          - Pattern: '{ "eventName": ["MODIFY"], "dynamodb": { "NewImage": { "entity": { "S": [ "score" ] }, "cod_chav_patc": { "S": [ { "prefix": "score#" } ] }, "cod_chav_filg": { "S": [ { "anything-but": { "prefix": "ALE#" } } ] }, "cod_chav_filg_locl": { "S": [ { "prefix": "LATEST#ALL#" } ] } } } }'
 
 
       # FunctionName: !GetAtt lambdaFunction.Arn

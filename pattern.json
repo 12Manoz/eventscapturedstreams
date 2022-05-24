@@ -1,9 +1,24 @@
 {
-  "eventName": ["INSERT"],
-  "dynamodb": {
-    "NewImage": { "entity": { "S": ["Product"] } ,
-    "complaint": { "BOOL": [false] },
-    "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#" }] }
-  }
-}
+    "eventName": [
+        "INSERT"
+    ],
+    "dynamodb": {
+        "NewImage": {
+            "entity": {
+                "S": [
+                    "Product"
+                ]
+            },
+            "compliant": {
+                "BOOL": [False ]
+            },
+            "cod_chav_filg_locl": {
+                "S": [
+                    {
+                        "prefix": "LATEST#"
+                    }
+                ]
+            }
+        }
+    }
 }
