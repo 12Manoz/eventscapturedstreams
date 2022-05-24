@@ -1,9 +1,21 @@
 {
-  "eventName": ["MODIFY"],
+  "eventName": [
+    "MODIFY"
+  ],
   "dynamodb": {
     "NewImage": {
-      "entity": { "S": ["score"] },
-      "cod_chav_patc": { "S": [{ "prefix": "score#" }] },
+      "entity": {
+        "S": [
+          "score"
+        ]
+      },
+      "cod_chav_patc": {
+        "S": [
+          {
+            "prefix": "score#"
+          }
+        ]
+      },
       "cod_chav_filg": {
         "S": [
           {
@@ -13,14 +25,13 @@
           }
         ]
       },
-      "cod_chav_filg_locl": { "S": [{ "prefix": "LATEST#ALL#" }] }
-    }
-  },
-  "OldImage": {
-    "score": [
-      {
-        "numeric": [">", 0, "<=", 100]
+      "cod_chav_filg_locl": {
+        "S": [
+          {
+            "prefix": "LATEST#ALL#"
+          }
+        ]
       }
-    ]
+    }
   }
 }
