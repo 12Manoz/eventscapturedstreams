@@ -1,0 +1,44 @@
+{
+  "Records": [
+    {
+      "eventID": "1803a988fb1000d24bf5c750f203d19e",
+      "eventName": "MODIFY",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "ApproximateCreationDateTime": 1653426058.0,
+        "Keys": {
+          "cod_chav_filg": { "S": "DEV#ALL#LATEST" },
+          "cod_chav_patc": { "S": "score#corretorainstmensageriabvsp" }
+        },
+        "NewImage": {
+          "cod_chav_filg": { "S": "DEV#ALL#LATEST" },
+          "score": { "S": "50.5" },
+          "validation_time": { "N": "1653402153614" },
+          "not_ok_questions": { "N": "2" },
+          "ok_questions": { "N": "1" },
+          "cod_chav_filg_locl": { "S": "LATEST#ALL#DEV" },
+          "entity": { "S": "score" },
+          "event_time": { "N": "1653402153614" },
+          "cod_chav_patc": { "S": "score#corretorainstmensageriabvsp" }
+        },
+        "OldImage": {
+          "cod_chav_filg": { "S": "DEV#ALL#LATEST" },
+          "score": { "S": "33.33" },
+          "validation_time": { "N": "1653402153614" },
+          "not_ok_questions": { "N": "2" },
+          "ok_questions": { "N": "1" },
+          "cod_chav_filg_locl": { "S": "LATEST#ALL#DEV" },
+          "entity": { "S": "score" },
+          "event_time": { "N": "1653402153614" },
+          "cod_chav_patc": { "S": "score#corretorainstmensageriabvsp" }
+        },
+        "SequenceNumber": "318114500000000071865932677",
+        "SizeBytes": 470,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:554995069609:table/tbff2002_prod_autm_rvis/stream/2022-04-19T16:31:42.091"
+    }
+  ]
+}
