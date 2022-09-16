@@ -235,7 +235,9 @@ Resources:
                 - dynamodb:Delete*
                 - dynamodb:Update*
                 - dynamodb:PutItem
-              Resource: arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_test
+              Resource:
+               - arn:aws:dynamodb:*:*:table/tbff2002_prod_autm_rvis_test
+               - arn:aws:dynamodb:us-east-1:554995069609:table/tbff2022_notification_centro
       - PolicyName: dynamodbnc
         PolicyDocument:
           Version: 2012-10-17
